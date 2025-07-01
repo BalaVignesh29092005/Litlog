@@ -1,0 +1,40 @@
+.logo {
+  position: relative;
+  border-radius: 16px;
+  display: flex;
+}
+.head{
+   position: relative;
+    z-index: 1;
+    color: rgb(2, 2, 2);
+    padding: 19px;
+
+}
+.nav-link {
+    display: block;
+    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    font-size: 1.2em !important;
+    font-weight: var(--bs-nav-link-font-weight);
+
+
+    text-decoration: none;
+    background: 0 0;
+    border: 0;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+.logo {
+    position: relative;
+    border-radius: 16px;
+    display: flex;
+}
+
+.nav-link {
+    font-size: 1.2em !important;
+    color: #0f0e0e !important;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out;
+}
+
+.nav-link:hover {
+    color: aqua !important;
+}

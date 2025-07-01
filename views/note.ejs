@@ -1,0 +1,35 @@
+<%- include('partials/header.ejs'); -%>
+
+    <link href="/styles/note.css" rel="stylesheet">
+    <% if (locals.notes) { %>
+        <main>
+                <header>
+                    <figure>
+                        <a href="<%= notes.booklink %>" target="_blank" rel="noopener noreferrer">
+                            <img src="https://covers.openlibrary.org/b/isbn/<%= notes.isbn %>-M.jpg"
+                                alt="<%= notes.title %>" width="185" height="180">
+                        </a>
+                    </figure>
+
+                    <div class="meta">
+                        <h1>
+                            <%= notes.title %> by <%= notes.author %>
+                        </h1>
+                        <small>ISBN: <%= notes.isbn %></small>
+                        <small>Date read: <%= notes.dor %></small>
+                        <small>Rating: <strong>
+                                <%= notes.rating %>
+                            </strong>/10</small>
+                        <p><strong>Go to the <a href="<%= notes.booklink %>" target="_blank">Amazon page</a></strong>
+                            for details and reviews.</p>
+                    </div>
+            </header>
+
+            <p id="booksummary"><%- notes.intro %>
+                    <h2>My Notes</h2>
+                    <p id="booknotes">
+                        <%- notes.note %>
+                    </p>
+        </main>
+        <% } %>
+            <%- include('partials/footer.ejs'); -%>

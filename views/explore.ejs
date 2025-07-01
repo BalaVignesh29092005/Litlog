@@ -1,0 +1,39 @@
+<%- include('partials/header.ejs'); -%>
+
+    <link href="/styles/explore.css" rel="stylesheet">
+
+    <% if (locals.explorenotes) { %>
+        <% explorenotes.forEach(notes=> { %>
+            <div class="abook" data-rating="<%= notes.rating %>" data-title="<%= notes.title %>"
+                data-date="<%= notes.date %>">
+                <figure>
+                    <a href="/book/<%= notes.id %>">
+                        <img src="https://covers.openlibrary.org/b/isbn/<%= notes.isbn %>-M.jpg" loading="lazy"
+                            alt="<%= notes.title %>" width="185" height="215">
+                    </a>
+                </figure>
+                <div>
+                    <h2><a href="/book/<%= notes.id %>">
+                            <%= notes.title %> by <%= notes.author %>
+                        </a></h2>
+                    <small>
+                        Date read: <%= notes.dor %>. The rating I gave it:
+                            <strong>
+                                <%= notes.rating %>
+                            </strong>/10
+                    </small>
+                    <p>
+                        <%- notes.intro %>
+                    </p>
+                    <p>
+                        <strong><a href="/book/<%= notes.id %>">Read my notes</a></strong>,
+                        or go to the <a href="<%= notes.booklink %>" target="_blank" rel="noopener noreferrer">Amazon page</a> for details and reviews.
+                    </p>
+                </div>
+            </div>
+            <% }); %>
+                <% } else { %>
+                    <p>No notes to display.</p>
+                    <% } %>
+
+                        <%- include('partials/footer.ejs'); -%>
