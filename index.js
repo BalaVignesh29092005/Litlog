@@ -2,11 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import { loadImage } from "canvas";
-import dotenv from 'dotenv';
-import session from 'express-session';
-
-
-
+import dotenv from "dotenv";
+import session from "express-session";
 
 const app = express();
 const port = 3000;
@@ -18,13 +15,14 @@ function limitChars(text, maxChars) {
   return text.slice(0, maxChars) + "...";
 }
 
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
-
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
 let notes = [];
 const db = new pg.Client({
@@ -108,49 +106,64 @@ app.get("/book/:id", async (req, res) => {
 app.get("/about", (req, res) => {
   res.render("about.ejs");
 });
-app.get('/signup1',(req,res)=>{
-  try{
-    res.render('signup-step1.ejs');
-  }
-  catch(err){
+app.get("/signup1", (req, res) => {
+  try {
+    res.render("signup-step1.ejs");
+  } catch (err) {
     console.error("Error fetching book by ID:", err);
     res.status(500).send("Internal server error");
   }
 });
-app.get('/login',(req,res)=>{
-  try{
-    res.render('login.ejs');
-  }
-  catch(err){
+app.get("/login", (req, res) => {
+  try {
+    res.render("login.ejs");
+  } catch (err) {
     console.error("Error fetching book by ID:", err);
     res.status(500).send("Internal server error");
   }
 });
-app.get('/signup2', (req, res) => {
-  res.render('signup-step2.ejs');
+app.get("/signup2", (req, res) => {
+  res.render("signup-step2.ejs");
 });
-app.post('/signup2', (req, res) => {
+app.post("/signup2", async (req, res) => {
   const signupData = req.session.signupData || {};
-  if(req.body.password===req.body.confirmPassword){
-  signupData.username = req.body.username;
-  signupData.password = req.body.password;
-  signupData.confirmPassword = req.body.confirmPassword;
-  req.session.signupData = null;
-  res.send("Signup complete! Data: " + JSON.stringify(signupData));
+  const result = await db.query("select * from users where username=$1", [
+    req.body.username
+  ]);
+  console.log(result.rows)
+  if(req.body.password != req.body.confirmPassword){
+    res.render("signup-step2.ejs",{error:"The Password do not match"});
   }
-  else{
-  res.redirect('/signup2');
+  else if(result.rows.length){
+    res.render("signup-step2.ejs",{error:"Username is already exists"});
+  }
+  else {
+    signupData.username = req.body.username;
+    signupData.password = req.body.password;
+    await db.query(
+      "INSERT INTO users (name, age, sex, dob, username, password) VALUES ($1, $2, $3, $4, $5, $6)",
+      [
+        signupData.name,
+        signupData.age,
+        signupData.sex,
+        signupData.dob,
+        signupData.username,
+        signupData.password,
+      ]
+    );
+    req.session.signupData = null;
+    res.send("Signup complete! User registered.");
   }
 });
 
-app.post('/signup1',(req,res)=>{
-  req.session.signupData={
+app.post("/signup1", (req, res) => {
+  req.session.signupData = {
     name: req.body.name,
     age: req.body.age,
     dob: req.body.dob,
     sex: req.body.sex,
   };
-  res.redirect('/signup2');
+  res.redirect("/signup2");
 });
 
 app.listen(port, () => {
