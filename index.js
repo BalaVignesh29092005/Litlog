@@ -36,7 +36,7 @@ db.connect();
 
 app.get("/", async (req, res) => {
   try {
-    res.render("index.ejs");
+    res.render("index.ejs", { user: req.session.user || {} });
   } catch (err) {
     console.error("Image load error:", err);
     res.status(500).send("Error loading image.");
@@ -44,11 +44,6 @@ app.get("/", async (req, res) => {
 });
 app.get("/explore", async (req, res) => {
   try {
-    const img = await loadImage(
-      "https://covers.openlibrary.org/b/isbn/0806541229-M.jpg"
-    );
-    const w = img.width;
-    const h = img.height;
     const result = await db.query("SELECT * FROM booknotes ORDER BY id ASC");
     let notes = result.rows.map((note) => {
       const dateObj = new Date(note.dor);
@@ -65,7 +60,10 @@ app.get("/explore", async (req, res) => {
         note: note.note.replace(/\\n/g, "<br>"),
       };
     });
-    res.render("explore.ejs", { explorenotes: notes });
+    res.render("explore.ejs", {
+      explorenotes: notes,
+      user: req.session.user || {},
+    });
   } catch (err) {
     console.error("Image load error:", err);
     res.status(500).send("Error loading image.");
@@ -97,6 +95,7 @@ app.get("/book/:id", async (req, res) => {
 
     res.render("note.ejs", {
       notes: note,
+      user: req.session.user || {},
     });
   } catch (err) {
     console.error("Error fetching book by ID:", err);
@@ -104,7 +103,7 @@ app.get("/book/:id", async (req, res) => {
   }
 });
 app.get("/about", (req, res) => {
-  res.render("about.ejs");
+  res.render("about.ejs", { user: req.session.user || {} });
 });
 app.get("/signup1", (req, res) => {
   try {
@@ -125,19 +124,21 @@ app.get("/login", (req, res) => {
 app.get("/signup2", (req, res) => {
   res.render("signup-step2.ejs");
 });
+app.get("/logout", (req, res) => {
+  req.session.user=null;
+  res.redirect('/')
+});
+
 app.post("/signup2", async (req, res) => {
   const signupData = req.session.signupData || {};
   const result = await db.query("select * from users where username=$1", [
-    req.body.username
+    req.body.username,
   ]);
-  console.log(result.rows)
-  if(req.body.password != req.body.confirmPassword){
-    res.render("signup-step2.ejs",{error:"The Password do not match"});
-  }
-  else if(result.rows.length){
-    res.render("signup-step2.ejs",{error:"Username is already exists"});
-  }
-  else {
+  if (req.body.password !== req.body.confirmPassword) {
+    res.render("signup-step2.ejs", { error: "The Password do not match" });
+  } else if (result.rows.length) {
+    res.render("signup-step2.ejs", { error: "Username is already exists" });
+  } else {
     signupData.username = req.body.username;
     signupData.password = req.body.password;
     await db.query(
@@ -166,6 +167,24 @@ app.post("/signup1", (req, res) => {
   res.redirect("/signup2");
 });
 
+app.post("/login", async (req, res) => {
+  try {
+    const result = await db.query("select * from users where username=$1", [
+      req.body.username,
+    ]);
+    if (result.rows.length === 0) {
+      res.render("login.ejs", { error: "Username does not exists" });
+    } else if (req.body.password !== result.rows[0].password) {
+      res.render("login.ejs", { error: "Password is incorrect" });
+    } else {
+      req.session.user = result.rows[0];
+      res.redirect("/");
+    }
+  } catch (err) {
+    console.error("Error fetching book by ID:", err);
+    res.status(500).send("Internal server error");
+  }
+});
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
