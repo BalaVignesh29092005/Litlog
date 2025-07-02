@@ -125,8 +125,22 @@ app.get("/signup2", (req, res) => {
   res.render("signup-step2.ejs");
 });
 app.get("/logout", (req, res) => {
-  req.session.user=null;
-  res.redirect('/')
+  req.session.user = null;
+  res.redirect("/");
+});
+app.get("/mylibrary", async (req, res) => {
+  if (typeof req.session.user !== "undefined" && req.session.user !==null) {
+
+    const result = await db.query(
+      "SELECT * FROM booknotes WHERE username = $1 ORDER BY id ASC",
+      [req.session.user.username || {}]
+    );
+    const mynote = result.rows || {};
+    res.render("mylibrary.ejs", { mynotes: mynote ,user: req.session.user || {},});
+  }
+  else{
+  res.render("mylibrary.ejs", { mynotes:  null,user: req.session.user || {},});
+  }
 });
 
 app.post("/signup2", async (req, res) => {
@@ -153,7 +167,7 @@ app.post("/signup2", async (req, res) => {
       ]
     );
     req.session.signupData = null;
-    res.send("Signup complete! User registered.");
+    res.redirect("/login");
   }
 });
 

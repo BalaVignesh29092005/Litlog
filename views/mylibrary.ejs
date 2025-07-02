@@ -1,0 +1,63 @@
+<%- include('partials/header.ejs'); -%>
+    <link href="/styles/mylibrary.css" rel="stylesheet">
+    <% if (mynotes===null) {%>
+        <div class="login-message-card">
+            <h2>Please Log In</h2>
+            <p>You must be logged in to access this page.</p>
+            <a href="/login" class="btn btn-login">Go to Login</a>
+        </div>
+
+        <% }else if (Object.keys(mynotes).length===0) { %>
+            <div class="d-flex justify-content-center align-items-start mt-5 ">
+                <div class="text-center">
+                    <img src="assets/create.png" class="img-fluid mb-3" width="300px" height="300px"
+                        alt="Centered Image">
+                    <h1>Create your own Note</h1>
+                    <form action="/create" method="get">
+                        <button class="btn btn-primary mt-4" type="submit">Create</button>
+                    </form>
+                </div>
+            </div>
+            <% } else { %>
+                <% mynotes.forEach(notes=> { %>
+                    <div class="abook mt-5 py-5" data-rating="<%= notes.rating %>" data-title="<%= notes.title %>"
+                        data-date="<%= notes.date %>">
+                        <figure>
+                            <a href="/book/<%= notes.id %>">
+                                <img src="https://covers.openlibrary.org/b/isbn/<%= notes.isbn %>-M.jpg" loading="lazy"
+                                    alt="<%= notes.title %>" width="185" height="215">
+                            </a>
+                        </figure>
+                        <div>
+                            <h2><a href="/book/<%= notes.id %>">
+                                    <%= notes.title %> by <%= notes.author %>
+                                </a></h2>
+                            <small>
+                                Date read: <%= notes.dor %>. The rating I gave it:
+                                    <strong>
+                                        <%= notes.rating %>
+                                    </strong>/10
+                            </small>
+                            <p>
+                                <%- notes.intro %>
+                            </p>
+                            <p>
+                                <strong><a href="/book/<%= notes.id %>">Read my notes</a></strong>,
+                                or go to the <a href="<%= notes.booklink %>" target="_blank"
+                                    rel="noopener noreferrer">Amazon page</a> for details and reviews.
+                            </p>
+                            <div class="note-actions">
+                                <a href="/edit/<%= notes.id %>" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                <form action="/delete/<%= notes.id %>" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+
+                        </div>
+
+                        <% } %>
+
+                            <%- include('partials/footer.ejs'); -%>

@@ -1,0 +1,136 @@
+.login-message-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  max-width: 420px;
+  margin: 135px auto;
+  text-align: center;
+}
+
+.login-message-card h2 {
+  color: #343a40;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.login-message-card p {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 30px;
+}
+
+.btn-login {
+  background-color: #667eea;
+  border: none;
+  padding: 12px 28px;
+  font-size: 1rem;
+  border-radius: 6px;
+  color: white;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-login:hover {
+  background-color: #556cd6;
+}
+
+.abook {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin: 40px auto;
+  padding: 24px;
+  max-width: 950px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.abook:hover {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.abook figure {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.abook img {
+  width: 185px;
+  height: 260px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
+
+.abook div {
+  flex: 1;
+}
+
+.abook h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.abook h2 a {
+  color: #333;
+  text-decoration: none;
+}
+
+.abook h2 a:hover {
+  text-decoration: underline;
+  color: #007bff;
+}
+
+.abook small {
+  display: block;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.abook p {
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.note-actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.note-actions .btn {
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.note-actions .btn-outline-primary {
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+  background-color: transparent;
+}
+
+.note-actions .btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.note-actions .btn-outline-danger {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  background-color: transparent;
+}
+
+.note-actions .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
