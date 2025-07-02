@@ -1,0 +1,70 @@
+<%- include('partials/header.ejs') -%>
+    <link href="/styles/create.css" rel="stylesheet">
+
+    <div class="form-container">
+        <h2>
+            <%= locals.note ? 'Edit Book Note' : 'Create a New Book Note' %>
+        </h2>
+
+        <form action="<%= locals.note ? ('/edit/' + note.id) : '/create' %>" method="POST">
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input type="text" id="isbn" name="isbn" value="<%= locals.note ? note.isbn : '' %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Book Title</label>
+                <input type="text" id="title" name="title" value="<%= locals.note ? note.title : '' %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input type="text" id="author" name="author" value="<%= locals.note ?note.author : '' %>"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating (1–10)</label>
+                <input type="number" id="rating" name="rating" min="1" max="10"
+                    value="<%= locals.note ? note.rating : '' %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dor">Date of Reading</label>
+                <input type="date" id="dor" name="dor" value="<%= locals.note && locals.note.dor ? note.dor.slice(0, 10) : '' %>" required>
+
+            </div>
+
+            <div class="form-group">
+                <label for="intro">Book Summary</label>
+                <textarea id="intro" name="intro" rows="4"
+                    required><%= locals.note ? note.intro : '' %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="note">Your Note</label>
+                <textarea id="note" name="note" rows="8" required><%= locals.note ? note.note : '' %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="booklink">Book Link (e.g. Amazon)</label>
+                <input type="url" id="booklink" name="booklink" value="<%= locals.note ? note.booklink : '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="access_type">Access Type</label>
+                <select id="access_type" name="access_type" required>
+                    <option value="private" <%=locals.note && locals.note.access_type==='private' ? 'selected' : '' %>
+                        >Private</option>
+                    <option value="public" <%=locals.note && locals.note.access_type==='public' ? 'selected' : '' %>
+                        >Public</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <%= locals.note ? 'Update Note' : 'Create Note' %>
+            </button>
+        </form>
+    </div>
+
+    <%- include('partials/footer.ejs') -%>

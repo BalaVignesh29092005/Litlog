@@ -44,22 +44,30 @@ app.get("/", async (req, res) => {
 });
 app.get("/explore", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM booknotes ORDER BY id ASC");
+    const result = await db.query(
+  "SELECT * FROM booknotes WHERE access_type = 'public' ORDER BY id ASC"
+);
+
     let notes = result.rows.map((note) => {
-      const dateObj = new Date(note.dor);
-      const day = String(dateObj.getDate()).padStart(2, "0");
-      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const year = dateObj.getFullYear();
-      const formattedDate = `${day}-${month}-${year}`;
-      const introWithNewlines = note.intro.replace(/\\n/g, " ");
-      const limitedIntro = limitChars(introWithNewlines, 320);
-      return {
-        ...note,
-        dor: formattedDate,
-        intro: limitedIntro,
-        note: note.note.replace(/\\n/g, "<br>"),
-      };
-    });
+  const dateObj = new Date(note.dor);
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const year = dateObj.getFullYear();
+  const formattedDate = `${day}-${month}-${year}`;
+
+  const introText = (note.intro || "").replace(/\\n/g, " ");
+  const limitedIntro = limitChars(introText, 320);
+
+  const formattedNote = (note.note || "").replace(/\\n/g, "<br>");
+
+  return {
+    ...note,
+    dor: formattedDate,
+    intro: limitedIntro,
+    note: formattedNote,
+  };
+});
+
     res.render("explore.ejs", {
       explorenotes: notes,
       user: req.session.user || {},
@@ -89,8 +97,8 @@ app.get("/book/:id", async (req, res) => {
     const note = {
       ...rawNote,
       dor: formattedDate,
-      intro: rawNote.intro.replace(/\\n/g, "<br>"),
-      note: rawNote.note.replace(/\\n/g, "<br>"),
+      intro: (rawNote.intro || "").replace(/\\n/g, "<br>"),
+      note: (rawNote.note|| "").replace(/\\n/g, "<br>"),
     };
 
     res.render("note.ejs", {
@@ -129,18 +137,77 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 app.get("/mylibrary", async (req, res) => {
-  if (typeof req.session.user !== "undefined" && req.session.user !==null) {
-
+  if (typeof req.session.user !== "undefined" && req.session.user !== null) {
     const result = await db.query(
       "SELECT * FROM booknotes WHERE username = $1 ORDER BY id ASC",
       [req.session.user.username || {}]
     );
-    const mynote = result.rows || {};
-    res.render("mylibrary.ejs", { mynotes: mynote ,user: req.session.user || {},});
+    let notes = result.rows.map((note) => {
+  const dateObj = new Date(note.dor);
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const year = dateObj.getFullYear();
+  const formattedDate = `${day}-${month}-${year}`;
+  const introText = (note.intro || "").replace(/\\n/g, " ");
+  const limitedIntro = limitChars(introText, 320);
+  const formattedNote = (note.note || "").replace(/\\n/g, "<br>");
+
+  return {
+    ...note,
+    dor: formattedDate,
+    intro: limitedIntro,
+    note: formattedNote,
+  };
+});
+
+    res.render("mylibrary.ejs", {
+      mynotes: notes,
+      user: req.session.user || {},
+    });
+  } else {
+    res.render("mylibrary.ejs", {
+      mynotes: null,
+      user: req.session.user || {},
+    });
   }
-  else{
-  res.render("mylibrary.ejs", { mynotes:  null,user: req.session.user || {},});
+});
+app.get("/create", (req, res) => {
+  res.render("create.ejs", { user: req.session.user || {} });
+});
+app.get('/edit/:id', async (req, res) => {
+  const bookId = req.params.id;
+  const result = await db.query("SELECT * FROM booknotes WHERE id = $1", [bookId]);
+
+  if (result.rows.length === 0) {
+    return res.status(404).send("Book not found");
   }
+
+  const rawNote = result.rows[0];
+
+  const dateObj = new Date(rawNote.dor);
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const year = dateObj.getFullYear();
+  const formattedDate = `${year}-${month}-${day}`;
+
+  const note = {
+    ...rawNote,
+    dor: formattedDate,
+    intro: (rawNote.intro || "").replace(/\\n/g, "<br>"),
+    note: (rawNote.note || "").replace(/\\n/g, "<br>"),
+  };
+
+  res.render("create.ejs", { user: req.session.user || {}, note });
+});
+
+app.get('/myprofile',async (req,res)=>{
+  const result = await db.query(
+      "SELECT * FROM booknotes WHERE username = $1 ORDER BY id ASC",
+      [req.session.user.username || {}]
+    );
+  const mynotes=result.rows;
+  res.render('myprofile.ejs',{notes:mynotes||{},
+      user: req.session.user || {},})
 });
 
 app.post("/signup2", async (req, res) => {
@@ -198,6 +265,97 @@ app.post("/login", async (req, res) => {
     console.error("Error fetching book by ID:", err);
     res.status(500).send("Internal server error");
   }
+});
+app.post("/create", async (req, res) => {
+  const isbn = req.body.isbn;
+  const title = req.body.title;
+  const author = req.body.author;
+  const rating = req.body.rating;
+  const dor = req.body.dor;
+  const summary = req.body.intro;
+  const note = req.body.note;
+  const link = req.body.booklink;
+  const access = req.body.access_type; 
+  const username = req.session.user.username;
+  try{
+  await db.query(`
+  INSERT INTO booknotes (isbn, title, author, rating, dor, intro, note, booklink, access_type, username)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+`, [
+    isbn,
+    title,
+    author,
+    rating,
+    dor,
+    summary,
+    note,
+    link,
+    access,
+    username,
+  ]);
+    res.redirect("/mylibrary");
+  }
+  catch(err){
+      console.error("Error inserting note:", err);
+      res.status(500).send("Database error");
+  }
+
+});
+
+app.post('/edit/:id', async (req, res) => {
+  try {
+    const noteId = parseInt(req.params.id, 10);
+
+    const {
+      isbn,
+      title,
+      author,
+      rating,
+      dor,
+      intro,
+      note,
+      booklink,
+      access_type,
+    } = req.body;
+
+    const updateQuery = `
+      UPDATE booknotes
+      SET isbn = $1,
+          title = $2,
+          author = $3,
+          rating = $4,
+          dor = $5,
+          intro = $6,
+          note = $7,
+          booklink = $8,
+          access_type = $9
+      WHERE id = $10
+    `;
+
+    const values = [
+      isbn,
+      title,
+      author,
+      rating,
+      dor,
+      intro,
+      note,
+      booklink,
+      access_type,
+      noteId,
+    ];
+
+    await db.query(updateQuery, values);
+    res.redirect('/mylibrary');
+  } catch (err) {
+    console.error('Error updating note:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+app.post('/delete/:id',async(req,res)=>{
+  const id=req.params.id;
+  await db.query("delete from booknotes where id=$1",[id]);
+  res.redirect('/mylibrary');
 });
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

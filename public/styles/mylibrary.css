@@ -134,3 +134,25 @@
   background-color: #dc3545;
   color: white;
 }
+.create-btn {
+    position: fixed;
+    bottom: 40px;
+    right: 50px;
+    width: 60px;
+    height: 60px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    font-size: 45px;
+    text-align: center;
+    line-height: 55px;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.create-btn:hover {
+    background-color: #0056b3;
+    text-decoration: none;
+}

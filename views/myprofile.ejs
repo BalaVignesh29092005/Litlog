@@ -1,0 +1,45 @@
+<%- include('partials/header.ejs') -%>
+
+<link href="/styles/profile.css" rel="stylesheet">
+
+<div class="profile-container">
+  <h1>My Profile</h1>
+
+  <div class="profile-card ms-5">
+      <div class="profile-avatar placeholder-avatar">
+        <%= user.username.charAt(0).toUpperCase() %>
+      </div>
+
+
+    <div class="profile-details ms-5">
+      <p><strong>Username:</strong> <%= user.username %></p>
+      <p><strong>Full Name:</strong> <%= user.fullName || 'Not provided' %></p>
+      <p><strong>Age:</strong> <%= user.age || 'Not specified' %></p>
+      <p><strong>Sex:</strong> <%= user.sex || 'Not specified' %></p>
+      <p><strong>Date of Birth:</strong> 
+        <% if (user.dob) { %>
+          <%= new Date(user.dob).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+        <% } else { %>
+          Not provided
+        <% } %>
+      </p>
+    </div>
+  </div>
+
+  <div class="notes-section mt-4 mb-3">
+    <h2>Your Notes</h2>
+    <% if (notes) { %>
+      <ul class="note-list mt-5">
+        <% notes.forEach(note => { %>
+          <li>
+            <a href="/book/<%= note.id %>"><%= note.title %></a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p>You haven’t added any notes yet.</p>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer.ejs') -%>
