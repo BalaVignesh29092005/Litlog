@@ -1,7 +1,7 @@
 
 # Litlog
 
-ThoughtStream is a full-stack web application for creating, managing, and exploring book notes. Users can register, log in, and maintain a personal library of notes with the option to make them public or private.
+litlog is a full-stack web application for creating, managing, and exploring book notes. Users can register, log in, and maintain a personal library of notes with the option to make them public or private.
 
 ---
 
