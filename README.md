@@ -1,83 +1,81 @@
+
 # Litlog
 
-Litlog is a lightweight, local blog platform built with Node.js, Express, and EJS templating. It provides a clean space to create, browse, and manage blog posts, with all data held in memory for the duration of a single session — no database setup required.
-
-> **Note:** Litlog is a session-based application. All content is stored in memory and will be lost when the server restarts.
+ThoughtStream is a full-stack web application for creating, managing, and exploring book notes. Users can register, log in, and maintain a personal library of notes with the option to make them public or private.
 
 ---
 
 ## Features
 
-| Route | Description |
-|---|---|
-| `/` (Home) | View featured blog previews |
-| `/create` | Submit new blog posts |
-| `/myblog` | View, edit, or delete your personal blogs |
-| `/explore` | Discover blogs at random or filtered by category |
-| `/view` | Read the full content of a selected blog |
-| `/about` | Learn more about the platform |
-
-Additional capabilities:
-- **Category filtering** — Browse blogs by topic, including Business, Technology, Sports, and more
+- Create, edit, and delete book notes
+- User signup and login with session support
+- Option to mark notes as public or private
+- Explore public notes from other users
+- View and manage your personal note library
 
 ---
 
-## Tech Stack
+## Technologies Used
 
-- **Backend:** Node.js, Express.js
-- **Templating:** EJS
-- **Styling:** Custom CSS (`/public`)
-- **Utilities:** `body-parser`, `path`, `he` (for HTML entity decoding)
+- Node.js with Express.js for the backend
+- EJS for templating and rendering dynamic pages
+- PostgreSQL for data storage
+- express-session for session handling
+- dotenv for environment variable management
 
 ---
 
-## Getting Started
+## Installation
 
-**1. Clone the repository**
-```bash
-git clone https://github.com/BalaVignesh29092005/Litlog.git
-cd Litlog
-```
+### 1. Clone the Repository
 
-**2. Install dependencies**
-```bash
+git clone https://github.com/BalaVignesh29092005/ThoughtStream.git
+cd ThoughtStream
+
+Install Dependencies
 npm install
-```
 
-**3. Start the server**
-```bash
-node app.js
-```
+Configure Environment Variables
+Create a .env file in the root directory and add the following:
 
-**4. Open in your browser**
-```
-http://localhost:3000
-```
+PORT=3000
+SESSION_SECRET=your_secret_key
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password
+DB_HOST=localhost
+DB_NAME=notes
+DB_PORT=5432
 
----
+ Set Up the Database
+Make sure PostgreSQL is installed and running. Create the database and tables:
+CREATE DATABASE notes;
 
-## Demo Content
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100),
+  age INT,
+  sex VARCHAR(10),
+  dob DATE,
+  username VARCHAR(50) UNIQUE,
+  password VARCHAR(100)
+);
 
-Litlog ships with sample blog posts across a range of categories to help you explore the platform right away:
+CREATE TABLE booknotes (
+  id SERIAL PRIMARY KEY,
+  isbn VARCHAR(20),
+  title TEXT,
+  author TEXT,
+  rating INT,
+  dor DATE,
+  intro TEXT,
+  note TEXT,
+  booklink TEXT,
+  access_type VARCHAR(20),
+  username VARCHAR(50)
+);
 
-- ⚽ Sports
-- 🌱 Environment
-- 🧠 Psychology
-- 🤖 Technology
-- 🏢 Business
-- 🎓 Education
-- 🪄 Minimalism
+Start the Application
 
----
+npm start
+The application will be available at http://localhost:3000
 
-## Limitations
-
-- **No persistent storage** — all data is held in memory
-- **No authentication** — all visitors share the same blog list within a session
-- **Session-scoped only** — content resets whenever the server restarts
-
----
-
-## License
-
-MIT License © 2025 Bala Vignesh
